@@ -1,14 +1,13 @@
 {
-  "version": 2,
-  "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "framework": "vite",
+  "installCommand": "npm install",
+  "nodeVersion": "18.x",
   "routes": [
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "installCommand": "npm install",
-  "nodeVersion": "18.x"
+  ]
 } 
