@@ -2,6 +2,7 @@ import { db } from './firebase';
 import { collection, addDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
 
 export interface SensorReading {
+  id?: string;
   timestamp: number;
   pH: number;
   nitrogen: number;
@@ -39,7 +40,7 @@ export const getLatestReadings = async (limitCount: number = 10): Promise<Sensor
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    })) as SensorReading[];
+    } as SensorReading));
   } catch (error) {
     console.error('Error getting latest readings:', error);
     throw error;

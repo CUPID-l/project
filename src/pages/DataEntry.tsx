@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Thermometer, 
@@ -98,97 +97,102 @@ const DataEntry = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Temperature */}
               <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <Thermometer className="text-blue-500" size={20} />
-                  <label htmlFor="temperature" className="text-sm">Temperature (°C)</label>
+                <div className="flex items-center gap-2">
+                  <Thermometer className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Temperature (°C)</span>
                 </div>
-                <NumberInput 
-                  value={formData.temperature} 
+                <NumberInput
+                  value={formData.temperature}
                   onChange={(value) => handleNumberChange("temperature", value)}
-                  min={-20}
+                  min={0}
                   max={50}
                   step={0.1}
                 />
               </div>
               
-              {/* Nitrogen */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <div className="text-amber-500 font-semibold">N</div>
-                  <label htmlFor="nitrogen" className="text-sm">Nitrogen (ppm)</label>
-                </div>
-                <NumberInput 
-                  value={formData.nitrogen} 
-                  onChange={(value) => handleNumberChange("nitrogen", value)}
-                  min={0}
-                  max={200}
-                />
-              </div>
-              
               {/* Humidity */}
               <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <Droplet className="text-blue-500" size={20} />
-                  <label htmlFor="humidity" className="text-sm">Humidity (%)</label>
+                <div className="flex items-center gap-2">
+                  <Droplet className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Humidity (%)</span>
                 </div>
-                <NumberInput 
-                  value={formData.humidity} 
+                <NumberInput
+                  value={formData.humidity}
                   onChange={(value) => handleNumberChange("humidity", value)}
                   min={0}
                   max={100}
-                />
-              </div>
-              
-              {/* Phosphorus */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <div className="text-amber-500 font-semibold">P</div>
-                  <label htmlFor="phosphorus" className="text-sm">Phosphorus (ppm)</label>
-                </div>
-                <NumberInput 
-                  value={formData.phosphorus} 
-                  onChange={(value) => handleNumberChange("phosphorus", value)}
-                  min={0}
-                  max={200}
+                  step={0.1}
                 />
               </div>
               
               {/* Rainfall */}
               <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <CloudRain className="text-blue-500" size={20} />
-                  <label htmlFor="rainfall" className="text-sm">Rainfall (mm)</label>
+                <div className="flex items-center gap-2">
+                  <CloudRain className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Rainfall (mm)</span>
                 </div>
-                <NumberInput 
-                  value={formData.rainfall} 
+                <NumberInput
+                  value={formData.rainfall}
                   onChange={(value) => handleNumberChange("rainfall", value)}
                   min={0}
                   max={1000}
+                  step={1}
+                />
+              </div>
+              
+              {/* Nitrogen */}
+              <div className="parameter-input">
+                <div className="flex items-center gap-2">
+                  <Leaf className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Nitrogen (kg/ha)</span>
+                </div>
+                <NumberInput
+                  value={formData.nitrogen}
+                  onChange={(value) => handleNumberChange("nitrogen", value)}
+                  min={0}
+                  max={200}
+                  step={0.1}
+                />
+              </div>
+              
+              {/* Phosphorus */}
+              <div className="parameter-input">
+                <div className="flex items-center gap-2">
+                  <Leaf className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Phosphorus (kg/ha)</span>
+                </div>
+                <NumberInput
+                  value={formData.phosphorus}
+                  onChange={(value) => handleNumberChange("phosphorus", value)}
+                  min={0}
+                  max={200}
+                  step={0.1}
                 />
               </div>
               
               {/* Potassium */}
               <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <div className="text-amber-500 font-semibold">K</div>
-                  <label htmlFor="potassium" className="text-sm">Potassium (ppm)</label>
+                <div className="flex items-center gap-2">
+                  <Leaf className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Potassium (kg/ha)</span>
                 </div>
-                <NumberInput 
-                  value={formData.potassium} 
+                <NumberInput
+                  value={formData.potassium}
                   onChange={(value) => handleNumberChange("potassium", value)}
                   min={0}
                   max={200}
+                  step={0.1}
                 />
               </div>
               
-              {/* Soil pH */}
+              {/* pH */}
               <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <Ruler className="text-purple-500" size={20} />
-                  <label htmlFor="pH" className="text-sm">Soil pH</label>
+                <div className="flex items-center gap-2">
+                  <Ruler className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">pH</span>
                 </div>
-                <NumberInput 
-                  value={formData.pH} 
+                <NumberInput
+                  value={formData.pH}
                   onChange={(value) => handleNumberChange("pH", value)}
                   min={0}
                   max={14}
@@ -198,63 +202,70 @@ const DataEntry = () => {
               
               {/* Soil Type */}
               <div className="parameter-input">
-                <div className="flex items-center gap-3">
-                  <Sprout className="text-green-500" size={20} />
-                  <label htmlFor="soilType" className="text-sm">Soil Type</label>
+                <div className="flex items-center gap-2">
+                  <Sprout className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Soil Type</span>
                 </div>
-                <div className="w-full">
-                  <Select
-                    value={formData.soilType}
-                    onValueChange={(value) => handleSelectChange("soilType", value)}
-                  >
-                    <SelectTrigger className="w-full border-0 focus:ring-0 focus:ring-offset-0 bg-transparent">
-                      <SelectValue placeholder="Select Soil Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {soilTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select
+                  value={formData.soilType}
+                  onValueChange={(value) => handleSelectChange("soilType", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select soil type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {soilTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               {/* Crop Type */}
-              <div className="parameter-input col-span-1 md:col-span-2">
-                <div className="flex items-center gap-3">
-                  <Leaf className="text-green-500" size={20} />
-                  <label htmlFor="cropType" className="text-sm">Crop Type</label>
+              <div className="parameter-input">
+                <div className="flex items-center gap-2">
+                  <Leaf className="text-soilsync-primary" size={20} />
+                  <span className="font-medium">Crop Type</span>
                 </div>
-                <div className="w-full">
-                  <Select
-                    value={formData.cropType}
-                    onValueChange={(value) => handleSelectChange("cropType", value)}
-                  >
-                    <SelectTrigger className="w-full border-0 focus:ring-0 focus:ring-offset-0 bg-transparent">
-                      <SelectValue placeholder="Select Crop Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cropTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select
+                  value={formData.cropType}
+                  onValueChange={(value) => handleSelectChange("cropType", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select crop type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cropTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             
-            <Button 
-              type="submit"
-              className="prediction-button w-full mt-8" 
-              disabled={loading}
-            >
-              <Rocket size={20} />
-              {loading ? "Analyzing..." : "Predict Fertilizer"}
-            </Button>
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                className="prediction-button"
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Analyzing...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Rocket size={16} />
+                    <span>Get Recommendations</span>
+                  </div>
+                )}
+              </Button>
+            </div>
           </form>
         </Card>
       </div>
