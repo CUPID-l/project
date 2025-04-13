@@ -17,19 +17,21 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="soilsync-theme">
-        <Router>
-          <Toaster />
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Index />} />
-              <Route path="data-entry" element={<DataEntry />} />
-              <Route path="auto-reports" element={<AutoReports />} />
-              <Route path="results" element={<Results />} />
-              <Route path="reports" element={<Reports />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </Router>
+        <div className="min-h-screen bg-background text-foreground antialiased">
+          <Router>
+            <Toaster />
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Index />} />
+                <Route path="data-entry" element={<DataEntry />} />
+                <Route path="auto-reports" element={<AutoReports />} />
+                <Route path="results" element={<Results />} />
+                <Route path="reports" element={<Reports />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </Router>
+        </div>
       </ThemeProvider>
     </QueryClientProvider>
   );

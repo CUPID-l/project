@@ -47,7 +47,9 @@
     --input: 240 3.7% 15.9%;
     --ring: 142 70% 45%;
   }
+}
 
+@layer base {
   * {
     @apply border-border;
   }
@@ -57,7 +59,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground min-h-screen;
   }
 }
 
