@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -17,27 +16,25 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="soilsync-theme">
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider defaultTheme="dark" storageKey="soilsync-theme">
+      <BrowserRouter basename="/">
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Index />} />
-                <Route path="/data-entry" element={<DataEntry />} />
-                <Route path="/results" element={<Results />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Index />} />
+              <Route path="/data-entry" element={<DataEntry />} />
+              <Route path="/results" element={<Results />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
         </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
+      </BrowserRouter>
+    </ThemeProvider>
+  </QueryClientProvider>
 );
 
 export default App;
