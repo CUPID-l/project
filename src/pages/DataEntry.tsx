@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 import axios from "axios";
 
 type FormData = {
@@ -70,18 +71,33 @@ const DataEntry = () => {
   const handlePredict = async () => {
     setLoading(true);
     try {
+      // Validate required fields
+      if (!formData.temperature || !formData.humidity || !formData.rainfall || 
+          !formData.nitrogen || !formData.phosphorus || !formData.potassium || 
+          !formData.ph || !formData.soilType || !formData.cropType) {
+        toast({
+          title: "Error",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+          duration: 3000,
+        });
+        return;
+      }
+
       const response = await axios.post(
         "https://cupid-i-fertilizer-pred.hf.space/predict",
         {
-          temperature: formData.temperature,
-          humidity: formData.humidity,
-          rainfall: formData.rainfall,
-          nitrogen: formData.nitrogen,
-          phosphorus: formData.phosphorus,
-          potassium: formData.potassium,
-          pH: formData.ph,
-          soil_type: formData.soilType,
-          crop_type: formData.cropType
+          inputs: {
+            temperature: parseFloat(formData.temperature),
+            humidity: parseFloat(formData.humidity),
+            rainfall: parseFloat(formData.rainfall),
+            nitrogen: parseFloat(formData.nitrogen),
+            phosphorus: parseFloat(formData.phosphorus),
+            potassium: parseFloat(formData.potassium),
+            pH: parseFloat(formData.ph),
+            soil_type: formData.soilType.toLowerCase(),
+            crop_type: formData.cropType.toLowerCase()
+          }
         },
         {
           headers: {
@@ -91,6 +107,10 @@ const DataEntry = () => {
         }
       );
       
+      if (!response.data) {
+        throw new Error("No prediction data received");
+      }
+
       setPrediction(response.data);
       toast({
         title: "Prediction Complete",
@@ -99,9 +119,22 @@ const DataEntry = () => {
       });
       await handleGenerateReport();
     } catch (error) {
+      console.error("Prediction error:", error);
+      let errorMessage = "Failed to get prediction. Please try again.";
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          errorMessage = "Authentication failed. Please check your API token.";
+        } else if (error.response?.status === 400) {
+          errorMessage = "Invalid input data. Please check your values.";
+        } else if (error.response?.data?.detail) {
+          errorMessage = error.response.data.detail;
+        }
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to get prediction. Please try again.",
+        description: errorMessage,
         variant: "destructive",
         duration: 3000,
       });
@@ -341,13 +374,26 @@ const DataEntry = () => {
           <div className="mt-6">
             <button 
               type="submit" 
-              className="btn-primary w-full"
+              className="btn-primary w-full flex items-center justify-center gap-2"
               disabled={loading}
             >
-              {loading ? 'Processing...' : 'Get Recommendations'}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                'Get Recommendations'
+              )}
             </button>
           </div>
         </form>
+
+        {loading && (
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            Generating prediction and report. This may take a few moments...
+          </div>
+        )}
       </div>
     </div>
   );
