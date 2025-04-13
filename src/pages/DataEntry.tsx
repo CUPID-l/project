@@ -39,31 +39,44 @@ const cropTypes = [
   "Onion",
 ];
 
+type FormData = {
+  nitrogen: string;
+  phosphorus: string;
+  potassium: string;
+  ph: string;
+  rainfall: string;
+  temperature: string;
+  humidity: string;
+  soilType: string;
+};
+
 const DataEntry = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const [formData, setFormData] = useState({
-    temperature: 25.0,
-    humidity: 60.0,
-    rainfall: 100.0,
-    nitrogen: 40.0,
-    phosphorus: 30.0,
-    potassium: 20.0,
-    pH: 6.5,
-    soilType: "Clay",
-    cropType: "Wheat"
+  const [formData, setFormData] = useState<FormData>({
+    nitrogen: '',
+    phosphorus: '',
+    potassium: '',
+    ph: '',
+    rainfall: '',
+    temperature: '',
+    humidity: '',
+    soilType: '',
   });
   
   const [loading, setLoading] = useState(false);
   const [prediction, setPrediction] = useState<any>(null);
   
-  const handleNumberChange = (field: string, value: number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement form submission
+    console.log('Form data:', formData);
   };
-  
-  const handleSelectChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
   
   const handlePredict = async () => {
@@ -78,7 +91,7 @@ const DataEntry = () => {
           nitrogen: formData.nitrogen,
           phosphorus: formData.phosphorus,
           potassium: formData.potassium,
-          pH: formData.pH,
+          pH: formData.ph,
           soil_type: formData.soilType,
           crop_type: formData.cropType
         },
@@ -133,7 +146,7 @@ const DataEntry = () => {
               Nitrogen: ${formData.nitrogen}kg/ha
               Phosphorus: ${formData.phosphorus}kg/ha
               Potassium: ${formData.potassium}kg/ha
-              pH: ${formData.pH}
+              pH: ${formData.ph}
               Soil Type: ${formData.soilType}
               Crop Type: ${formData.cropType}
               
@@ -178,189 +191,149 @@ const DataEntry = () => {
   };
   
   return (
-    <div className="container max-w-screen-xl px-4 py-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Soil Parameter Entry</h1>
-        <p className="text-foreground/70 mb-8">
-          Enter the soil parameters to get fertilizer recommendations.
-        </p>
+    <div className="container mx-auto px-4 py-8">
+      <div className="card max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Soil Data Entry</h1>
         
-        <Card className="border border-border/40 bg-card/50 p-6">
-          <form className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Temperature */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Thermometer className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Temperature (°C)</span>
-                </div>
-                <NumberInput 
-                  value={formData.temperature} 
-                  onChange={(value) => handleNumberChange("temperature", value)}
-                  min={0}
-                  max={50}
-                  step={0.1}
-                />
-              </div>
-              
-              {/* Humidity */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Droplet className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Humidity (%)</span>
-                </div>
-                <NumberInput
-                  value={formData.humidity}
-                  onChange={(value) => handleNumberChange("humidity", value)}
-                  min={0}
-                  max={100}
-                  step={0.1}
-                />
-              </div>
-              
-              {/* Rainfall */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <CloudRain className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Rainfall (mm)</span>
-                </div>
-                <NumberInput
-                  value={formData.rainfall}
-                  onChange={(value) => handleNumberChange("rainfall", value)}
-                  min={0}
-                  max={1000}
-                  step={1}
-                />
-              </div>
-              
-              {/* Nitrogen */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Leaf className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Nitrogen (kg/ha)</span>
-                </div>
-                <NumberInput 
-                  value={formData.nitrogen} 
-                  onChange={(value) => handleNumberChange("nitrogen", value)}
-                  min={0}
-                  max={200}
-                  step={0.1}
-                />
-              </div>
-              
-              {/* Phosphorus */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Leaf className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Phosphorus (kg/ha)</span>
-                </div>
-                <NumberInput 
-                  value={formData.phosphorus} 
-                  onChange={(value) => handleNumberChange("phosphorus", value)}
-                  min={0}
-                  max={200}
-                  step={0.1}
-                />
-              </div>
-              
-              {/* Potassium */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Leaf className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Potassium (kg/ha)</span>
-                </div>
-                <NumberInput 
-                  value={formData.potassium} 
-                  onChange={(value) => handleNumberChange("potassium", value)}
-                  min={0}
-                  max={200}
-                  step={0.1}
-                />
-              </div>
-              
-              {/* pH */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Ruler className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">pH</span>
-                </div>
-                <NumberInput 
-                  value={formData.pH} 
-                  onChange={(value) => handleNumberChange("pH", value)}
-                  min={0}
-                  max={14}
-                  step={0.1}
-                />
-              </div>
-              
-              {/* Soil Type */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Sprout className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Soil Type</span>
-                </div>
-                <Select
-                  value={formData.soilType}
-                  onValueChange={(value) => handleSelectChange("soilType", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select soil type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {soilTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Crop Type */}
-              <div className="parameter-input">
-                <div className="flex items-center gap-2">
-                  <Leaf className="text-soilsync-primary" size={20} />
-                  <span className="font-medium">Crop Type</span>
-                </div>
-                <Select
-                  value={formData.cropType}
-                  onValueChange={(value) => handleSelectChange("cropType", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select crop type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cropTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="nitrogen" className="block text-sm font-medium mb-1">
+                Nitrogen (mg/kg)
+              </label>
+              <input
+                type="number"
+                id="nitrogen"
+                name="nitrogen"
+                value={formData.nitrogen}
+                onChange={handleChange}
+                className="input-field"
+                required
+              />
             </div>
-            
-            <div className="flex gap-4 justify-end">
-              <Button 
-                type="button"
-                onClick={handlePredict}
-                disabled={loading}
-                className="bg-soilsync-primary hover:bg-soilsync-primary/90"
-              >
-                {loading ? "Predicting..." : "Get Prediction"}
-              </Button>
-              
-              <Button 
-                type="button"
-                onClick={handleGenerateReport}
-                disabled={loading || !prediction}
-                variant="outline"
-              >
-                {loading ? "Generating..." : "Generate Report"}
-              </Button>
+
+            <div>
+              <label htmlFor="phosphorus" className="block text-sm font-medium mb-1">
+                Phosphorus (mg/kg)
+              </label>
+              <input
+                type="number"
+                id="phosphorus"
+                name="phosphorus"
+                value={formData.phosphorus}
+                onChange={handleChange}
+                className="input-field"
+                required
+              />
             </div>
-          </form>
-        </Card>
+
+            <div>
+              <label htmlFor="potassium" className="block text-sm font-medium mb-1">
+                Potassium (mg/kg)
+              </label>
+              <input
+                type="number"
+                id="potassium"
+                name="potassium"
+                value={formData.potassium}
+                onChange={handleChange}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="ph" className="block text-sm font-medium mb-1">
+                pH Level
+              </label>
+              <input
+                type="number"
+                id="ph"
+                name="ph"
+                value={formData.ph}
+                onChange={handleChange}
+                className="input-field"
+                step="0.1"
+                min="0"
+                max="14"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="rainfall" className="block text-sm font-medium mb-1">
+                Rainfall (mm)
+              </label>
+              <input
+                type="number"
+                id="rainfall"
+                name="rainfall"
+                value={formData.rainfall}
+                onChange={handleChange}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="temperature" className="block text-sm font-medium mb-1">
+                Temperature (°C)
+              </label>
+              <input
+                type="number"
+                id="temperature"
+                name="temperature"
+                value={formData.temperature}
+                onChange={handleChange}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="humidity" className="block text-sm font-medium mb-1">
+                Humidity (%)
+              </label>
+              <input
+                type="number"
+                id="humidity"
+                name="humidity"
+                value={formData.humidity}
+                onChange={handleChange}
+                className="input-field"
+                min="0"
+                max="100"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="soilType" className="block text-sm font-medium mb-1">
+                Soil Type
+              </label>
+              <select
+                id="soilType"
+                name="soilType"
+                value={formData.soilType}
+                onChange={handleChange}
+                className="input-field"
+                required
+              >
+                <option value="">Select soil type</option>
+                <option value="sandy">Sandy</option>
+                <option value="loamy">Loamy</option>
+                <option value="clay">Clay</option>
+                <option value="silt">Silt</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <button type="submit" className="btn-primary w-full">
+              Get Recommendations
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
