@@ -14,8 +14,11 @@ export default function Layout() {
             </Link>
             
             <div className="flex items-center gap-4">
-              <Link to="/data-entry" className="hover:text-primary transition-colors">
-                Data Entry
+              <Link to="/manual-entry" className="hover:text-primary transition-colors">
+                Manual Entry
+              </Link>
+              <Link to="/generate-report" className="hover:text-primary transition-colors">
+                Generate Report
               </Link>
               <Link to="/results" className="hover:text-primary transition-colors">
                 Results

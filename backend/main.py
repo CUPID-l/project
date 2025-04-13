@@ -44,6 +44,7 @@ HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 # Gemini configuration
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel('gemini-pro')
 
 class SoilParameters(BaseModel):
     pH: float = Field(..., ge=0, le=14)
@@ -73,6 +74,17 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+class SoilData(BaseModel):
+    nitrogen: str
+    phosphorus: str
+    potassium: str
+    ph: str
+    rainfall: str
+    temperature: str
+    humidity: str
+    soilType: str
+    prediction: Optional[dict] = None
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -153,7 +165,6 @@ async def predict(
 
         # Get additional suggestions using Gemini
         try:
-            model = genai.GenerativeModel('gemini-pro')
             prompt = f"""
             Based on these soil parameters:
             pH: {soil_params.pH}
@@ -199,47 +210,51 @@ async def predict(
         )
 
 @app.post("/api/generate-report")
-async def generate_report(
-    soil_params: SoilParameters,
-    current_user: TokenData = Depends(get_current_user)
-):
+async def generate_report(data: SoilData):
     try:
-        if not GEMINI_API_KEY:
-            raise HTTPException(
-                status_code=500,
-                detail="Gemini API configuration missing"
-            )
-
-        model = genai.GenerativeModel('gemini-pro')
+        # Create a detailed prompt for the report
         prompt = f"""
-        Generate a comprehensive soil analysis report for {soil_params.cropType} cultivation with the following parameters:
+        Generate a detailed agricultural report based on the following soil parameters:
         
         Soil Parameters:
-        - pH: {soil_params.pH}
-        - Nitrogen: {soil_params.nitrogen} ppm
-        - Phosphorus: {soil_params.phosphorus} ppm
-        - Potassium: {soil_params.potassium} ppm
-        - Moisture: {soil_params.moisture}%
-        - Temperature: {soil_params.temperature}°C
-        - Humidity: {soil_params.humidity}%
+        - Soil Type: {data.soilType}
+        - pH Level: {data.ph}
+        - Nitrogen Content: {data.nitrogen} mg/kg
+        - Phosphorus Content: {data.phosphorus} mg/kg
+        - Potassium Content: {data.potassium} mg/kg
+        - Rainfall: {data.rainfall} mm
+        - Temperature: {data.temperature}°C
+        - Humidity: {data.humidity}%
         
-        Include:
-        1. Soil health assessment
-        2. Nutrient analysis
-        3. Recommendations for improvement
-        4. Seasonal considerations
-        5. Risk factors to monitor
+        {f'Recommended Fertilizer: {data.prediction["fertilizer"]}' if data.prediction else ''}
+        {f'Application Rate: {data.prediction["applicationRate"]}' if data.prediction else ''}
+        
+        Please provide:
+        1. Soil Health Analysis
+        2. Nutrient Balance Assessment
+        3. Environmental Conditions Impact
+        4. Fertilizer Recommendations and Application Strategy
+        5. Best Practices for Soil Management
+        6. Potential Risks and Mitigation Strategies
+        
+        Format the report in a clear, professional structure with headings and bullet points where appropriate.
         """
-        
+
+        # Generate the report using Gemini
         response = model.generate_content(prompt)
-        return {"report": response.text}
         
+        # Check if the response was blocked
+        if response.prompt_feedback.block_reason:
+            raise HTTPException(status_code=400, detail="Content generation was blocked")
+
+        return {"report": response.text}
+
     except Exception as e:
-        logger.error(f"Report generation error: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail="An error occurred while generating the report"
-        )
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api")
+def read_root():
+    return {"message": "Soil Sync API is running"}
 
 if __name__ == "__main__":
     import uvicorn
