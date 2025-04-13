@@ -93,6 +93,14 @@ export default function ReportGeneration() {
 
       const result = await response.json();
       setReport(result.report);
+      
+      // Store the report data and navigate to results page
+      const reportData = {
+        ...selectedData,
+        report: result.report
+      };
+      localStorage.setItem("soilsyncData", JSON.stringify(reportData));
+      navigate("/results");
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to generate report. Please try again.');
