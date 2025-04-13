@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import NumberInput from "@/components/NumberInput";
+import axios from "axios";
 
 const soilTypes = [
   "Clay",
@@ -55,6 +56,7 @@ const DataEntry = () => {
   });
   
   const [loading, setLoading] = useState(false);
+  const [prediction, setPrediction] = useState<any>(null);
   
   const handleNumberChange = (field: string, value: number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -64,24 +66,115 @@ const DataEntry = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePredict = async () => {
     setLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // Store form data in localStorage to use in Results page
-      localStorage.setItem("soilsyncData", JSON.stringify(formData));
+    try {
+      const response = await axios.post(
+        "https://cupid-i-fertilizer-pred.hf.space/predict",
+        {
+          temperature: formData.temperature,
+          humidity: formData.humidity,
+          rainfall: formData.rainfall,
+          nitrogen: formData.nitrogen,
+          phosphorus: formData.phosphorus,
+          potassium: formData.potassium,
+          pH: formData.pH,
+          soil_type: formData.soilType,
+          crop_type: formData.cropType
+        },
+        {
+          headers: {
+            "Authorization": `Bearer ${import.meta.env.VITE_HF_API_TOKEN}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
       
-      setLoading(false);
+      setPrediction(response.data);
       toast({
-        title: "Analysis Complete",
-        description: "Fertilizer recommendations are ready.",
+        title: "Prediction Complete",
+        description: "Fertilizer prediction is ready.",
         duration: 3000,
       });
-      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to get prediction. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateReport = async () => {
+    if (!prediction) {
+      toast({
+        title: "Error",
+        description: "Please get a prediction first.",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_GEMINI_API_ENDPOINT,
+        {
+          contents: [{
+            parts: [{
+              text: `Generate a detailed fertilizer recommendation report based on the following data:
+              Temperature: ${formData.temperature}°C
+              Humidity: ${formData.humidity}%
+              Rainfall: ${formData.rainfall}mm
+              Nitrogen: ${formData.nitrogen}kg/ha
+              Phosphorus: ${formData.phosphorus}kg/ha
+              Potassium: ${formData.potassium}kg/ha
+              pH: ${formData.pH}
+              Soil Type: ${formData.soilType}
+              Crop Type: ${formData.cropType}
+              
+              Prediction Results:
+              ${JSON.stringify(prediction, null, 2)}
+              
+              Please provide:
+              1. Detailed analysis of the soil conditions
+              2. Specific fertilizer recommendations
+              3. Application guidelines
+              4. Expected outcomes
+              5. Additional considerations`
+            }]
+          }]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": import.meta.env.VITE_GEMINI_API_KEY
+          }
+        }
+      );
+
+      const reportData = {
+        ...formData,
+        prediction,
+        report: response.data.candidates[0].content.parts[0].text
+      };
+
+      localStorage.setItem("soilsyncData", JSON.stringify(reportData));
       navigate("/results");
-    }, 1500);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate report. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
   
   return (
@@ -93,7 +186,7 @@ const DataEntry = () => {
         </p>
         
         <Card className="border border-border/40 bg-card/50 p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Temperature */}
               <div className="parameter-input">
@@ -101,8 +194,8 @@ const DataEntry = () => {
                   <Thermometer className="text-soilsync-primary" size={20} />
                   <span className="font-medium">Temperature (°C)</span>
                 </div>
-                <NumberInput
-                  value={formData.temperature}
+                <NumberInput 
+                  value={formData.temperature} 
                   onChange={(value) => handleNumberChange("temperature", value)}
                   min={0}
                   max={50}
@@ -146,8 +239,8 @@ const DataEntry = () => {
                   <Leaf className="text-soilsync-primary" size={20} />
                   <span className="font-medium">Nitrogen (kg/ha)</span>
                 </div>
-                <NumberInput
-                  value={formData.nitrogen}
+                <NumberInput 
+                  value={formData.nitrogen} 
                   onChange={(value) => handleNumberChange("nitrogen", value)}
                   min={0}
                   max={200}
@@ -161,8 +254,8 @@ const DataEntry = () => {
                   <Leaf className="text-soilsync-primary" size={20} />
                   <span className="font-medium">Phosphorus (kg/ha)</span>
                 </div>
-                <NumberInput
-                  value={formData.phosphorus}
+                <NumberInput 
+                  value={formData.phosphorus} 
                   onChange={(value) => handleNumberChange("phosphorus", value)}
                   min={0}
                   max={200}
@@ -176,8 +269,8 @@ const DataEntry = () => {
                   <Leaf className="text-soilsync-primary" size={20} />
                   <span className="font-medium">Potassium (kg/ha)</span>
                 </div>
-                <NumberInput
-                  value={formData.potassium}
+                <NumberInput 
+                  value={formData.potassium} 
                   onChange={(value) => handleNumberChange("potassium", value)}
                   min={0}
                   max={200}
@@ -191,8 +284,8 @@ const DataEntry = () => {
                   <Ruler className="text-soilsync-primary" size={20} />
                   <span className="font-medium">pH</span>
                 </div>
-                <NumberInput
-                  value={formData.pH}
+                <NumberInput 
+                  value={formData.pH} 
                   onChange={(value) => handleNumberChange("pH", value)}
                   min={0}
                   max={14}
@@ -247,23 +340,23 @@ const DataEntry = () => {
               </div>
             </div>
             
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                className="prediction-button"
+            <div className="flex gap-4 justify-end">
+              <Button 
+                type="button"
+                onClick={handlePredict}
                 disabled={loading}
+                className="bg-soilsync-primary hover:bg-soilsync-primary/90"
               >
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Analyzing...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Rocket size={16} />
-                    <span>Get Recommendations</span>
-                  </div>
-                )}
+                {loading ? "Predicting..." : "Get Prediction"}
+              </Button>
+              
+              <Button 
+                type="button"
+                onClick={handleGenerateReport}
+                disabled={loading || !prediction}
+                variant="outline"
+              >
+                {loading ? "Generating..." : "Generate Report"}
               </Button>
             </div>
           </form>

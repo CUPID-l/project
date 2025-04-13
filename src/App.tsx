@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import DataEntry from "./pages/DataEntry";
+import AutoReports from "./pages/AutoReports";
 import Results from "./pages/Results";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
@@ -16,25 +17,26 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="soilsync-theme">
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="soilsync-theme">
       <BrowserRouter basename="/">
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Index />} />
-              <Route path="/data-entry" element={<DataEntry />} />
-              <Route path="/results" element={<Results />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Index />} />
+                <Route path="/data-entry" element={<DataEntry />} />
+                <Route path="/auto-reports" element={<AutoReports />} />
+                <Route path="/results" element={<Results />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
         </TooltipProvider>
       </BrowserRouter>
-    </ThemeProvider>
-  </QueryClientProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
 );
 
 export default App;
