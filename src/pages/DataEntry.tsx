@@ -1,20 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Thermometer, 
-  Droplet, 
-  CloudRain, 
-  Ruler, 
-  Leaf, 
-  Sprout, 
-  Rocket
-} from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import NumberInput from "@/components/NumberInput";
 import axios from "axios";
+
+type FormData = {
+  nitrogen: string;
+  phosphorus: string;
+  potassium: string;
+  ph: string;
+  rainfall: string;
+  temperature: string;
+  humidity: string;
+  soilType: string;
+  cropType: string;
+};
 
 const soilTypes = [
   "Clay",
@@ -39,17 +38,6 @@ const cropTypes = [
   "Onion",
 ];
 
-type FormData = {
-  nitrogen: string;
-  phosphorus: string;
-  potassium: string;
-  ph: string;
-  rainfall: string;
-  temperature: string;
-  humidity: string;
-  soilType: string;
-};
-
 const DataEntry = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -63,6 +51,7 @@ const DataEntry = () => {
     temperature: '',
     humidity: '',
     soilType: '',
+    cropType: '',
   });
   
   const [loading, setLoading] = useState(false);
@@ -70,8 +59,7 @@ const DataEntry = () => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement form submission
-    console.log('Form data:', formData);
+    await handlePredict();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -109,6 +97,7 @@ const DataEntry = () => {
         description: "Fertilizer prediction is ready.",
         duration: 3000,
       });
+      await handleGenerateReport();
     } catch (error) {
       toast({
         title: "Error",
@@ -185,9 +174,8 @@ const DataEntry = () => {
         variant: "destructive",
         duration: 3000,
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
   
   return (
@@ -320,17 +308,43 @@ const DataEntry = () => {
                 required
               >
                 <option value="">Select soil type</option>
-                <option value="sandy">Sandy</option>
-                <option value="loamy">Loamy</option>
-                <option value="clay">Clay</option>
-                <option value="silt">Silt</option>
+                {soilTypes.map((type) => (
+                  <option key={type} value={type.toLowerCase()}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="cropType" className="block text-sm font-medium mb-1">
+                Crop Type
+              </label>
+              <select
+                id="cropType"
+                name="cropType"
+                value={formData.cropType}
+                onChange={handleChange}
+                className="input-field"
+                required
+              >
+                <option value="">Select crop type</option>
+                {cropTypes.map((type) => (
+                  <option key={type} value={type.toLowerCase()}>
+                    {type}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
           <div className="mt-6">
-            <button type="submit" className="btn-primary w-full">
-              Get Recommendations
+            <button 
+              type="submit" 
+              className="btn-primary w-full"
+              disabled={loading}
+            >
+              {loading ? 'Processing...' : 'Get Recommendations'}
             </button>
           </div>
         </form>
