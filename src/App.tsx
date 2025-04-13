@@ -17,26 +17,26 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="soilsync-theme">
-      <BrowserRouter basename="/">
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider defaultTheme="dark" storageKey="soilsync-theme">
+      <BrowserRouter>
         <TooltipProvider>
           <Toaster />
           <Sonner />
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Index />} />
-                <Route path="/data-entry" element={<DataEntry />} />
-                <Route path="/auto-reports" element={<AutoReports />} />
-                <Route path="/results" element={<Results />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Index />} />
+              <Route path="data-entry" element={<DataEntry />} />
+              <Route path="auto-reports" element={<AutoReports />} />
+              <Route path="results" element={<Results />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
         </TooltipProvider>
       </BrowserRouter>
-      </ThemeProvider>
-    </QueryClientProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
 );
 
 export default App;
